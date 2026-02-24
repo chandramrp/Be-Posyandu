@@ -1,0 +1,105 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role{
+  Admin
+  Kader
+}
+
+enum Status{
+  Aktif 
+  Nonaktif
+}
+
+enum JenisKelamin{
+  Laki_laki
+  Perempuan
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  nama String 
+  email String @unique
+  password String
+  role Role
+  status Status @default(Aktif)
+  token String? @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Balita{
+  id Int @id @default(autoincrement())
+  nama String
+  tanggalLahir DateTime
+  jenisKelamin JenisKelamin
+  namaOrtu String
+  alamat String
+  posyandu String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pemeriksaan PemeriksaanBalita[]
+  @@map("balita")
+}
+
+model IbuHamil{
+  id Int @id @default(autoincrement())
+  nama String
+  namaSuami String
+  tanggalLahir DateTime
+  alamat String
+  golDarah String
+  posyandu String
+  usiaKehamilan Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  pemeriksaan PemeriksaanIbuHamil[]
+  @@map("ibu_hamil")
+}
+
+model PemeriksaanBalita{
+  id Int @id @default(autoincrement())
+  balitaId Int
+  tanggal DateTime
+  berat Decimal
+  tinggi  Decimal
+  lingkarKepala Decimal
+  keterangan String?
+  createdAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+
+  balita Balita @relation(fields: [balitaId], references: [id])
+  @@map("pemeriksaan_balita")
+}
+
+model PemeriksaanIbuHamil{
+  id Int @id @default(autoincrement())
+  ibuHamilId Int
+  tanggal DateTime
+  usiaKehamilan Int
+  berat Decimal
+  tinggi Decimal
+  tensi String
+  keterangan String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  ibuHamil IbuHamil @relation(fields: [ibuHamilId], references: [id])
+  @@map("pemeriksaan_ibu_hamil")
+}
