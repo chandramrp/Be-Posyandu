@@ -6,6 +6,7 @@ import {
 } from "../models/user-model";
 import { UserService } from "../services/user-service";
 import { UserRequest } from "../type/user-request";
+import { BalitaService } from "../services/balita-service";
 
 export class UserController {
 	static async register(req: Request, res: Response, next: NextFunction) {
@@ -60,6 +61,18 @@ export class UserController {
 			await UserService.logout(req.user!);
 			res.status(200).json({
 				data: "Ok",
+			});
+		} catch (e) {
+			next(e);
+		}
+	}
+
+	static async remove(req: UserRequest, res: Response, next: NextFunction) {
+		try {
+			const id: number = Number(req.params.id);
+			await UserService.remove(id);
+			res.status(200).json({
+				data: "Berhasil dihapus",
 			});
 		} catch (e) {
 			next(e);

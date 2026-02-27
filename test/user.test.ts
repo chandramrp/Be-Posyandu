@@ -1,4 +1,3 @@
-import { response } from "express";
 import bcrypt from "bcrypt";
 import { logger } from "../src/app/logging";
 import { app } from "./../src/app/app";
@@ -202,5 +201,34 @@ describe("DELETE /api/users/current", () => {
 		logger.debug(response.body);
 		expect(response.status).toBe(401);
 		expect(response.body.errors).toBeDefined;
+	});
+});
+
+describe("DELETE /api/users/:id", () => {
+	beforeEach(async () => {
+		await UserTest.delete();
+		await UserTest.create();
+	});
+
+	it("should be able to delete user", async () => {
+		const user = await UserTest.get();
+		const response = await supertest(app)
+			.delete(`/api/users/${user.id}`)
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data).toBe("Berhasil dihapus");
+	});
+
+	it("should be reject to delete user", async () => {
+		const user = await UserTest.get();
+		const response = await supertest(app)
+			.delete(`/api/users/${user.id}`)
+			.set("X-API-TOKEN", "te");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(401);
+		expect(response.body.errors).toBeDefined();
 	});
 });

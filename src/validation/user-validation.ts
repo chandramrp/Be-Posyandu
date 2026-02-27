@@ -1,5 +1,4 @@
 import z, { ZodType } from "zod";
-import { errorMiddleware } from "../middleware/error-middleware";
 
 export class UserValidation {
 	static readonly REGISTER: ZodType = z.object({

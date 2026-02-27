@@ -21,6 +21,10 @@ export type LoginUserRequest = {
 	password: string;
 };
 
+export type DeteUserRequest = {
+	email: string;
+};
+
 export type UpdateUserRequest = {
 	nama?: string;
 	email?: string;

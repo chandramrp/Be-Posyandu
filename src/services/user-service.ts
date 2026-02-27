@@ -3,6 +3,7 @@ import { prismaClient } from "../app/database";
 import { ResponseError } from "../error/response-error";
 import {
 	CreateUserRequest,
+	DeteUserRequest,
 	LoginUserRequest,
 	toUserResponse,
 	UpdateUserRequest,
@@ -42,18 +43,24 @@ export class UserService {
 		return toUserResponse(user);
 	}
 
-	static async login(request: LoginUserRequest): Promise<UserResponse> {
-		const loginRequest = Validation.validate(UserValidation.LOGIN, request);
-
-		let user = await prismaClient.user.findUnique({
+	static async checkUserMustExist(email: string): Promise<User> {
+		const result = await prismaClient.user.findUnique({
 			where: {
-				email: request.email,
+				email: email,
 			},
 		});
 
-		if (!user) {
+		if (!result) {
 			throw new ResponseError(401, "Username or password is wrong");
 		}
+
+		return result;
+	}
+
+	static async login(request: LoginUserRequest): Promise<UserResponse> {
+		const loginRequest = Validation.validate(UserValidation.LOGIN, request);
+
+		let user = await this.checkUserMustExist(loginRequest.email);
 
 		const isPasswordValid = await bcrypt.compare(
 			loginRequest.password,
@@ -132,5 +139,21 @@ export class UserService {
 		});
 
 		return toUserResponse(result);
+	}
+
+	static async remove(id: number) {
+		const user = await prismaClient.user.findUnique({
+			where: {
+				id: id,
+			},
+		});
+
+		await this.checkUserMustExist(user!.email);
+
+		await prismaClient.user.delete({
+			where: {
+				email: user!.email,
+			},
+		});
 	}
 }
