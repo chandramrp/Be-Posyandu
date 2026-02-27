@@ -1,9 +1,8 @@
-import { User } from "@prisma/client";
+import { Balita, User } from "@prisma/client";
 import { prismaClient } from "../app/database";
 import { ResponseError } from "../error/response-error";
 import {
 	CreateUserRequest,
-	DeteUserRequest,
 	LoginUserRequest,
 	toUserResponse,
 	UpdateUserRequest,
@@ -13,6 +12,7 @@ import { UserValidation } from "../validation/user-validation";
 import { Validation } from "../validation/validation";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
+import { BalitaResponse } from "../models/balita-model";
 
 export class UserService {
 	static async register(request: CreateUserRequest): Promise<UserResponse> {
@@ -83,6 +83,12 @@ export class UserService {
 		const response = toUserResponse(user);
 		response.token = user.token!;
 		return response;
+	}
+
+	static async getAll(): Promise<UserResponse[]> {
+		const listUser = await prismaClient.user.findMany();
+
+		return listUser.map((user) => toUserResponse(user));
 	}
 
 	static async get(user: User): Promise<UserResponse> {

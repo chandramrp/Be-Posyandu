@@ -6,7 +6,6 @@ import {
 } from "../models/user-model";
 import { UserService } from "../services/user-service";
 import { UserRequest } from "../type/user-request";
-import { BalitaService } from "../services/balita-service";
 
 export class UserController {
 	static async register(req: Request, res: Response, next: NextFunction) {
@@ -25,6 +24,17 @@ export class UserController {
 		try {
 			const request: LoginUserRequest = req.body as LoginUserRequest;
 			const response = await UserService.login(request);
+			res.status(200).json({
+				data: response,
+			});
+		} catch (e) {
+			next(e);
+		}
+	}
+
+	static async getAll(req: UserRequest, res: Response, next: NextFunction) {
+		try {
+			const response = await UserService.getAll();
 			res.status(200).json({
 				data: response,
 			});

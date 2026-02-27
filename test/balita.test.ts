@@ -1,15 +1,15 @@
-import { BalitaTest, UserTest } from "./test-util";
+import supertest from "supertest";
 import { logger } from "../src/app/logging";
 import { app } from "./../src/application/app";
-import supertest from "supertest";
+import { BalitaTest, UserTest } from "./test-util";
 
 describe("POST /api/balita", () => {
 	beforeEach(async () => {
 		await UserTest.create();
 	});
 	afterEach(async () => {
-		await UserTest.delete();
 		await BalitaTest.deleteAll();
+		await UserTest.delete();
 	});
 
 	it("should be able to create balita", async () => {

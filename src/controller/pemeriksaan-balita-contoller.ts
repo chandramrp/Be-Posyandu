@@ -1,0 +1,53 @@
+import { NextFunction, Request, Response } from "express";
+import { CreatePemeriksaanBalitaRequest } from "../models/pemeriksaan-balita-model";
+import { BalitaService } from "../services/balita-service";
+import { PemeriksaanBalitaService } from "../services/pemeriksaan-balita-service";
+
+export class PemeriksaanBalitaController {
+	static async create(req: Request, res: Response, next: NextFunction) {
+		try {
+			const id = Number(req.params.id);
+			await BalitaService.checkBalitaMustExsist(id);
+			const request: CreatePemeriksaanBalitaRequest = {
+				...req.body,
+				balitaId: id,
+			};
+
+			const response = await PemeriksaanBalitaService.create(request);
+			res.status(200).json({
+				data: response,
+			});
+		} catch (e) {
+			next(e);
+		}
+	}
+
+	static async getAll(req: Request, res: Response, next: NextFunction) {
+		try {
+			const id = Number(req.params.id);
+			await BalitaService.checkBalitaMustExsist(id);
+			const response = await PemeriksaanBalitaService.getAll(id);
+
+			res.status(200).json({
+				data: response,
+			});
+		} catch (e) {
+			next(e);
+		}
+	}
+
+	static async get(req: Request, res: Response, next: NextFunction) {
+		try {
+			const balitaId = Number(req.params.balitaId);
+			const pemeriksaanId = Number(req.params.pemeriksaanId);
+			await BalitaService.checkBalitaMustExsist(balitaId);
+			const response = await PemeriksaanBalitaService.get(pemeriksaanId);
+
+			res.status(200).json({
+				data: response,
+			});
+		} catch (e) {
+			next(e);
+		}
+	}
+}

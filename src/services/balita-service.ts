@@ -1,5 +1,7 @@
 import { Balita } from "@prisma/client";
 import { prismaClient } from "../app/database";
+import { logger } from "../app/logging";
+import { ResponseError } from "../error/response-error";
 import {
 	BalitaResponse,
 	CreateBalitaRequest,
@@ -8,8 +10,6 @@ import {
 } from "../models/balita-model";
 import { BalitaValidation } from "../validation/balita-validation";
 import { Validation } from "../validation/validation";
-import { ResponseError } from "../error/response-error";
-import { logger } from "../app/logging";
 
 export class BalitaService {
 	static async register(
@@ -106,7 +106,5 @@ export class BalitaService {
 				id: id,
 			},
 		});
-
-		return toBalitaResponse(balita);
 	}
 }

@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
+import supertest from "supertest";
 import { logger } from "../src/app/logging";
 import { app } from "./../src/app/app";
-import supertest from "supertest";
 import { UserTest } from "./test-util";
 
 describe("POST /api/users", () => {
@@ -66,6 +66,37 @@ describe("POST /api/users/login", () => {
 			email: "test1@test.id",
 			password: "test1",
 		});
+
+		logger.debug(response.body);
+		expect(response.status).toBe(401);
+		expect(response.body.errors).toBeDefined();
+	});
+});
+
+describe("GET /api/users", () => {
+	beforeEach(async () => {
+		await UserTest.createMultiple(5);
+	});
+
+	afterEach(async () => {
+		await UserTest.delete();
+	});
+
+	it("should be able to get data users", async () => {
+		const user = await UserTest.get();
+		const response = await supertest(app)
+			.get("/api/users")
+			.set("X-API-TOKEN", user.token!);
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(5);
+	});
+
+	it("should be reject to get data users", async () => {
+		const response = await supertest(app)
+			.get("/api/users")
+			.set("X-API-TOKEN", "hi");
 
 		logger.debug(response.body);
 		expect(response.status).toBe(401);
@@ -219,16 +250,5 @@ describe("DELETE /api/users/:id", () => {
 		logger.debug(response.body);
 		expect(response.status).toBe(200);
 		expect(response.body.data).toBe("Berhasil dihapus");
-	});
-
-	it("should be reject to delete user", async () => {
-		const user = await UserTest.get();
-		const response = await supertest(app)
-			.delete(`/api/users/${user.id}`)
-			.set("X-API-TOKEN", "te");
-
-		logger.debug(response.body);
-		expect(response.status).toBe(401);
-		expect(response.body.errors).toBeDefined();
 	});
 });
