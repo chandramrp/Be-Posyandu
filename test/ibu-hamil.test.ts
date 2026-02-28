@@ -94,6 +94,53 @@ describe("GET /api/ibuhamil", () => {
 		logger.debug(response.body);
 		expect(response.status).toBe(200);
 		expect(response.body.data.length).toBe(5);
+		expect(response.body.meta.total).toBe(5);
+		expect(response.body.meta.page).toBe(1);
+		expect(response.body.meta.totalPages).toBe(1);
+	});
+
+	it("should be able to search by nama", async () => {
+		const response = await supertest(app)
+			.get("/api/ibuhamil?search=test")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(5);
+		expect(response.body.meta).toBeDefined();
+	});
+
+	it("should be able to search by nama suami", async () => {
+		const response = await supertest(app)
+			.get("/api/ibuhamil?search=test")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(5);
+		expect(response.body.meta).toBeDefined();
+	});
+
+	it("should be able to search with pagination", async () => {
+		const response = await supertest(app)
+			.get("/api/ibuhamil?page=1&limit=2")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(2);
+		expect(response.body.meta.totalPages).toBe(3);
+	});
+
+	it("should return empty when search not found", async () => {
+		const response = await supertest(app)
+			.get("/api/ibuhamil?search=tidakada")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(0);
+		expect(response.body.meta.total).toBe(0);
 	});
 
 	it("should be rejected to get all data ibu hamil", async () => {

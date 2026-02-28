@@ -22,12 +22,16 @@ export class IbuHamilController {
 		}
 	}
 
-	static async getAll(_: Request, res: Response, next: NextFunction) {
+	static async getAll(req: Request, res: Response, next: NextFunction) {
 		try {
-			const response = await IbuHamilServices.getAll();
-			res.status(200).json({
-				data: response,
-			});
+			const query = {
+				search: req.query.search as string | undefined,
+				page: Number(req.query.page as string) || 1,
+				limit: Number(req.query.limit as string) || 10,
+			};
+			const response = await IbuHamilServices.getAll(query);
+			logger.debug("response : " + JSON.stringify(response));
+			res.status(200).json(response);
 		} catch (e) {
 			next(e);
 		}
@@ -37,6 +41,7 @@ export class IbuHamilController {
 		try {
 			const id = Number(req.params.id);
 			const response = await IbuHamilServices.get(id);
+			logger.debug("response : " + JSON.stringify(response));
 			res.status(200).json({
 				data: response,
 			});
@@ -51,6 +56,7 @@ export class IbuHamilController {
 			const request: UpdateIbuHamilRequest =
 				req.body as UpdateIbuHamilRequest;
 			const response = await IbuHamilServices.update(id, request);
+			logger.debug("response : " + JSON.stringify(response));
 			res.status(200).json({
 				data: response,
 			});
@@ -63,6 +69,7 @@ export class IbuHamilController {
 		try {
 			const id = Number(req.params.id);
 			const response = await IbuHamilServices.remove(id);
+			logger.debug("response : " + JSON.stringify(response));
 			res.status(200).json({
 				data: response,
 			});

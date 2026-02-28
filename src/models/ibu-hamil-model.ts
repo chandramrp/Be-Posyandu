@@ -31,6 +31,12 @@ export type UpdateIbuHamilRequest = {
 	usiaKehamilan: number;
 };
 
+export type IbuHamilQuery = {
+	search?: string;
+	page: number;
+	limit: number;
+};
+
 export function toIbuHamilResponse(ibuHamil: IbuHamil): IbuHamilResponse {
 	return {
 		id: ibuHamil.id,

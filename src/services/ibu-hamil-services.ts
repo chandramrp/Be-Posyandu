@@ -4,10 +4,12 @@ import { logger } from "../app/logging";
 import { ResponseError } from "../error/response-error";
 import {
 	CreateIbuHamilRequest,
+	IbuHamilQuery,
 	IbuHamilResponse,
 	toIbuHamilResponse,
 	UpdateIbuHamilRequest,
 } from "../models/ibu-hamil-model";
+import { Paginated } from "../models/page";
 import { IbuHamilValidation } from "../validation/ibu-hamil-validation";
 import { Validation } from "../validation/validation";
 
@@ -28,12 +30,47 @@ export class IbuHamilServices {
 		return toIbuHamilResponse(response);
 	}
 
-	static async getAll(): Promise<IbuHamilResponse[]> {
-		const response = await prismaClient.ibuHamil.findMany();
-		if (!response) {
-			throw new ResponseError(404, "Ibu hamil not found");
-		}
-		return response.map((data) => toIbuHamilResponse(data));
+	static async getAll(
+		query: IbuHamilQuery,
+	): Promise<Paginated<IbuHamilResponse[]>> {
+		const validQuery = Validation.validate(IbuHamilValidation.QUERY, query);
+		const { search, page, limit } = validQuery;
+		const skip = (page - 1) * limit;
+
+		const where = {
+			AND: [
+				search
+					? {
+							OR: [
+								{ nama: { contains: search } },
+								{ namaSuami: { contains: search } },
+							],
+						}
+					: {},
+			],
+		};
+
+		const [data, total] = await Promise.all([
+			prismaClient.ibuHamil.findMany({
+				where,
+				skip,
+				take: limit,
+				orderBy: {
+					createdAt: "desc",
+				},
+			}),
+			prismaClient.ibuHamil.count({ where }),
+		]);
+
+		return {
+			data: data.map((ibuHamil) => toIbuHamilResponse(ibuHamil)),
+			meta: {
+				page,
+				limit,
+				total,
+				totalPages: Math.ceil(total / limit),
+			},
+		};
 	}
 
 	static async checkIbuHamilMustExist(id: number): Promise<IbuHamil> {
