@@ -16,4 +16,11 @@ export class BalitaValidation {
 		namaOrtu: z.string().min(1).max(100).optional(),
 		alamat: z.string().min(1).max(100).optional(),
 	});
+
+	static readonly QUERY: ZodType = z.object({
+		search: z.string().optional(),
+		jenisKelamin: z.enum(["Laki_laki", "Perempuan"]).optional(),
+		page: z.coerce.number().min(1).default(1),
+		limit: z.coerce.number().min(1).max(100).default(100),
+	});
 }

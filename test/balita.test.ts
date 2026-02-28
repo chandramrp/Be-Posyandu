@@ -71,7 +71,43 @@ describe("GET /api/balita", () => {
 
 		logger.debug(response.body);
 		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(5); // <-- data ada di dalam object
+		expect(response.body.meta.page).toBe(1);
+		expect(response.body.meta.limit).toBe(10);
+		expect(response.body.meta.total).toBe(5);
+		expect(response.body.meta.totalPages).toBe(1);
+	});
+
+	it("should be able to search by nama", async () => {
+		const response = await supertest(app)
+			.get("/api/balita?search=test")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
 		expect(response.body.data.length).toBe(5);
+		expect(response.body.meta).toBeDefined();
+	});
+
+	it("should be able to filter by jenis kelamin", async () => {
+		const response = await supertest(app)
+			.get("/api/balita?jenisKelamin=Perempuan")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.meta).toBeDefined();
+	});
+
+	it("should be able to search with pagination", async () => {
+		const response = await supertest(app)
+			.get("/api/balita?page=1&limit=2")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(2);
+		expect(response.body.meta.totalPages).toBe(3);
 	});
 
 	it("should be reject to get data balita", async () => {
@@ -103,6 +139,7 @@ describe("GET /api/balita/:id", () => {
 			.set("X-API-TOKEN", "test");
 
 		logger.debug(response.body);
+		expect(response.status).toBe(200);
 		expect(response.body.data.nama).toBe(balita.nama);
 		expect(response.body.data.tanggalLahir).toBeDefined();
 	});

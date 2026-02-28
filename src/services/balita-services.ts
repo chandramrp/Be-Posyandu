@@ -1,13 +1,14 @@
 import { Balita } from "@prisma/client";
 import { prismaClient } from "../app/database";
-import { logger } from "../app/logging";
 import { ResponseError } from "../error/response-error";
 import {
+	BalitaQuery,
 	BalitaResponse,
 	CreateBalitaRequest,
 	toBalitaResponse,
 	UpdateBalitaRequest,
 } from "../models/balita-model";
+import { Paginated } from "../models/page";
 import { BalitaValidation } from "../validation/balita-validation";
 import { Validation } from "../validation/validation";
 
@@ -27,15 +28,59 @@ export class BalitaService {
 		return toBalitaResponse(balita);
 	}
 
-	static async getAll(): Promise<BalitaResponse[]> {
-		const listBalita = await prismaClient.balita.findMany();
+	static async getAll(
+		query: BalitaQuery,
+	): Promise<Paginated<BalitaResponse[]>> {
+		const searchRequest = Validation.validate(
+			BalitaValidation.QUERY,
+			query,
+		);
+		const { search, jenisKelamin, page, limit } = searchRequest;
+		const skip = (page - 1) * limit;
 
-		logger.debug(listBalita);
-		if (listBalita.length === 0) {
-			throw new ResponseError(404, "Balita not found");
-		}
+		const where = {
+			AND: [
+				search
+					? {
+							OR: [
+								{
+									nama: { contains: search },
+								},
+								{
+									namaOrtu: {
+										contains: search,
+									},
+								},
+							],
+						}
+					: {},
+				jenisKelamin ? { jenisKelamin } : {},
+			],
+		};
 
-		return listBalita.map((balita) => toBalitaResponse(balita));
+		const [data, total] = await Promise.all([
+			prismaClient.balita.findMany({
+				where,
+				skip,
+				take: limit,
+				orderBy: {
+					createdAt: "desc",
+				},
+			}),
+			prismaClient.balita.count({
+				where,
+			}),
+		]);
+
+		return {
+			data: data.map((balita) => toBalitaResponse(balita)),
+			meta: {
+				page,
+				limit,
+				total,
+				totalPages: Math.ceil(total / limit),
+			},
+		};
 	}
 
 	static async checkBalitaMustExsist(id: number): Promise<Balita> {

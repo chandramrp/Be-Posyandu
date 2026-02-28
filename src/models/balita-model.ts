@@ -26,6 +26,13 @@ export type UpdateBalitaRequest = {
 	alamat?: string | null;
 };
 
+export type BalitaQuery = {
+	search?: string;
+	jenisKelamin?: JenisKelamin;
+	page: number;
+	limit: number;
+};
+
 export function toBalitaResponse(balita: Balita): BalitaResponse {
 	return {
 		id: balita.id,

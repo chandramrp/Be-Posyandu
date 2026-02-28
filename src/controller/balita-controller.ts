@@ -1,3 +1,4 @@
+import { JenisKelamin } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import { logger } from "../app/logging";
 import {
@@ -25,11 +26,18 @@ export class BalitaController {
 
 	static async getAll(req: BalitaRequest, res: Response, next: NextFunction) {
 		try {
-			const response = await BalitaService.getAll();
+			const query = {
+				search: req.query.search as string | undefined,
+				jenisKelamin: req.query.jenisKelamin as
+					| JenisKelamin
+					| undefined,
+				page: Number(req.query.page as string) || 1,
+				limit: Number(req.query.limit as string) || 10,
+			};
+
+			const response = await BalitaService.getAll(query);
 			logger.debug("response : " + JSON.stringify(response));
-			res.status(200).json({
-				data: response,
-			});
+			res.status(200).json(response);
 		} catch (e) {
 			next(e);
 		}
