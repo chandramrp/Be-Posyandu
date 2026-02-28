@@ -9,4 +9,12 @@ export class PemeriksaanBalitaValidation {
 		lingkarKepala: z.number().positive(),
 		keterangan: z.string().min(1).max(100).optional(),
 	});
+
+	static readonly UPDATE: ZodType = z.object({
+		tanggal: z.coerce.date().optional(),
+		berat: z.number().positive().optional(),
+		tinggi: z.number().positive().optional(),
+		lingkarKepala: z.number().positive().optional(),
+		keterangan: z.string().min(1).max(100).optional(),
+	});
 }

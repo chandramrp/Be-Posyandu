@@ -129,10 +129,10 @@ export class IbuHamilTest {
 
 export class PemeriksaanBalitaTest {
 	static async delete() {
+		const balita = await BalitaTest.get();
 		await prismaClient.pemeriksaanBalita.deleteMany({
 			where: {
-				keterangan: "test",
-				tinggi: 120,
+				balitaId: balita.id,
 			},
 		});
 	}

@@ -1,5 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { CreatePemeriksaanBalitaRequest } from "../models/pemeriksaan-balita-model";
+import {
+	CreatePemeriksaanBalitaRequest,
+	UpdatePemeriksaanBalitaRequest,
+} from "../models/pemeriksaan-balita-model";
 import { BalitaService } from "../services/balita-service";
 import { PemeriksaanBalitaService } from "../services/pemeriksaan-balita-service";
 
@@ -42,6 +45,41 @@ export class PemeriksaanBalitaController {
 			const pemeriksaanId = Number(req.params.pemeriksaanId);
 			await BalitaService.checkBalitaMustExsist(balitaId);
 			const response = await PemeriksaanBalitaService.get(pemeriksaanId);
+
+			res.status(200).json({
+				data: response,
+			});
+		} catch (e) {
+			next(e);
+		}
+	}
+
+	static async update(req: Request, res: Response, next: NextFunction) {
+		try {
+			const request: UpdatePemeriksaanBalitaRequest =
+				req.body as UpdatePemeriksaanBalitaRequest;
+			const balitaId = Number(req.params.balitaId);
+			const pemeriksaanId = Number(req.params.pemeriksaanId);
+			await BalitaService.checkBalitaMustExsist(balitaId);
+			const response = await PemeriksaanBalitaService.update(
+				pemeriksaanId,
+				request,
+			);
+			res.status(200).json({
+				data: response,
+			});
+		} catch (e) {
+			next(e);
+		}
+	}
+
+	static async remove(req: Request, res: Response, next: NextFunction) {
+		try {
+			const balitaId = Number(req.params.balitaId);
+			const pemeriksaanId = Number(req.params.pemeriksaanId);
+			await BalitaService.checkBalitaMustExsist(balitaId);
+			const response =
+				await PemeriksaanBalitaService.remove(pemeriksaanId);
 
 			res.status(200).json({
 				data: response,

@@ -142,9 +142,7 @@ describe("GET /api/balita/:id/pemeriksaan/:id", () => {
 	beforeEach(async () => {
 		await UserTest.create();
 		await BalitaTest.create();
-		for (let i = 0; i < 5; i++) {
-			await PemeriksaanBalitaTest.create();
-		}
+		await PemeriksaanBalitaTest.create();
 	});
 
 	afterEach(async () => {
@@ -205,5 +203,176 @@ describe("GET /api/balita/:id/pemeriksaan/:id", () => {
 		logger.debug(response.body);
 		expect(response.status).toBe(404);
 		expect(response.body.errors).toBeDefined();
+	});
+});
+
+describe("PATCH /api/balita/:id/pemeriksaan/:id", () => {
+	beforeEach(async () => {
+		await UserTest.create();
+		await BalitaTest.create();
+		await PemeriksaanBalitaTest.create();
+	});
+
+	afterEach(async () => {
+		await PemeriksaanBalitaTest.delete();
+		await BalitaTest.deleteAll();
+		await UserTest.delete();
+	});
+
+	it("should be able to update data pemeriksaan balita", async () => {
+		const balita = await BalitaTest.get();
+		const pemeriksaan = await PemeriksaanBalitaTest.get();
+		const response = await supertest(app)
+			.patch(`/api/balita/${balita.id}/pemeriksaan/${pemeriksaan.id}`)
+			.set("X-API-TOKEN", "test")
+			.send({
+				tanggal: new Date("2020-01-01"),
+				berat: 100,
+				tinggi: 170.7,
+				lingkarKepala: 100,
+			});
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.balitaId).toBe(balita.id);
+		expect(response.body.data.tanggal).toBe(
+			new Date("2020-01-01").toISOString(),
+		);
+		expect(response.body.data.berat).toBe(100);
+		expect(response.body.data.tinggi).toBe(170.7);
+		expect(response.body.data.lingkarKepala).toBe(100);
+		expect(response.body.data.keterangan).toBe("test");
+	});
+
+	it("should be data invalid", async () => {
+		const balita = await BalitaTest.get();
+		const pemeriksaan = await PemeriksaanBalitaTest.get();
+		const response = await supertest(app)
+			.patch(`/api/balita/${balita.id}/pemeriksaan/${pemeriksaan.id}`)
+			.set("X-API-TOKEN", "test")
+			.send({
+				tanggal: "",
+				berat: "",
+				tinggi: "",
+				lingkarKepala: "",
+			});
+
+		logger.debug(response.body);
+		expect(response.status).toBe(400);
+		expect(response.body.errors).toBeDefined();
+	});
+
+	it("should be unauthorized", async () => {
+		const balita = await BalitaTest.get();
+		const pemeriksaan = await PemeriksaanBalitaTest.get();
+		const response = await supertest(app)
+			.patch(`/api/balita/${balita.id}/pemeriksaan/${pemeriksaan.id}`)
+			.set("X-API-TOKEN", "hi")
+			.send({
+				tanggal: new Date("2020-01-01"),
+				berat: 100,
+				tinggi: 170.7,
+				lingkarKepala: 100,
+			});
+
+		logger.debug(response.body);
+		expect(response.status).toBe(401);
+		expect(response.body.errors).toBeDefined();
+	});
+
+	it("should be pemeriksaan not found", async () => {
+		const balita = await BalitaTest.get();
+		const response = await supertest(app)
+			.patch(`/api/balita/${balita.id}/pemeriksaan/1111111111`)
+			.set("X-API-TOKEN", "test")
+			.send({
+				tanggal: new Date("2020-01-01"),
+				berat: 100,
+				tinggi: 170.7,
+				lingkarKepala: 100,
+			});
+
+		logger.debug(response.body);
+		expect(response.status).toBe(404);
+		expect(response.body.errors).toBeDefined();
+	});
+
+	it("should be balita not found", async () => {
+		const pemeriksaan = await PemeriksaanBalitaTest.get();
+		const response = await supertest(app)
+			.patch(`/api/balita/101001/pemeriksaan/${pemeriksaan.id}`)
+			.set("X-API-TOKEN", "test")
+			.send({
+				tanggal: new Date("2020-01-01"),
+				berat: 100,
+				tinggi: 170.7,
+				lingkarKepala: 100,
+			});
+
+		logger.debug(response.body);
+		expect(response.status).toBe(404);
+		expect(response.body.errors).toBeDefined();
+	});
+});
+
+describe("DELETE /api/balita/:id/pemeriksaan/:id", () => {
+	beforeEach(async () => {
+		await UserTest.create();
+		await BalitaTest.create();
+		await PemeriksaanBalitaTest.create();
+	});
+
+	afterEach(async () => {
+		await BalitaTest.deleteAll();
+		await UserTest.delete();
+	});
+
+	it("should be able to delete pemeriksaan data", async () => {
+		const balita = await BalitaTest.get();
+		const pemeriksaan = await PemeriksaanBalitaTest.get();
+		const response = await supertest(app)
+			.del(`/api/balita/${balita.id}/pemeriksaan/${pemeriksaan.id}`)
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data).toBe("Pemeriksaan berhasil dihapus");
+	});
+
+	it("should be rejected to delete pemeriksaan data", async () => {
+		const balita = await BalitaTest.get();
+		const pemeriksaan = await PemeriksaanBalitaTest.get();
+		const response = await supertest(app)
+			.del(`/api/balita/${balita.id}/pemeriksaan/${pemeriksaan.id}`)
+			.set("X-API-TOKEN", "t");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(401);
+		expect(response.body.errors).toBeDefined();
+		await PemeriksaanBalitaTest.delete();
+	});
+
+	it("should be error balita not found", async () => {
+		const pemeriksaan = await PemeriksaanBalitaTest.get();
+		const response = await supertest(app)
+			.del(`/api/balita/11111/pemeriksaan/${pemeriksaan.id}`)
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(404);
+		expect(response.body.errors).toBeDefined();
+		await PemeriksaanBalitaTest.delete();
+	});
+
+	it("should be error pemeriksaan not found", async () => {
+		const balita = await BalitaTest.get();
+		const response = await supertest(app)
+			.del(`/api/balita/${balita.id}/pemeriksaan/1111`)
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(404);
+		expect(response.body.errors).toBeDefined();
+		await PemeriksaanBalitaTest.delete();
 	});
 });

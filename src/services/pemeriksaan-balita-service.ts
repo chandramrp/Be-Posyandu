@@ -1,10 +1,12 @@
 import { PemeriksaanBalita } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 import { prismaClient } from "../app/database";
 import { ResponseError } from "../error/response-error";
 import {
 	CreatePemeriksaanBalitaRequest,
 	PemeriksaanBalitaResponse,
 	toPemeriksaanBalitaResponse,
+	UpdatePemeriksaanBalitaRequest,
 } from "../models/pemeriksaan-balita-model";
 import { PemeriksaanBalitaValidation } from "../validation/pemeriksaan-balita-validation";
 import { Validation } from "../validation/validation";
@@ -66,5 +68,56 @@ export class PemeriksaanBalitaService {
 	static async get(id: number): Promise<PemeriksaanBalitaResponse> {
 		const response = await this.checkPemeriksaanMustExist(id);
 		return toPemeriksaanBalitaResponse(response);
+	}
+
+	static async update(
+		id: number,
+		request: UpdatePemeriksaanBalitaRequest,
+	): Promise<PemeriksaanBalitaResponse> {
+		const updateRequest = Validation.validate(
+			PemeriksaanBalitaValidation.UPDATE,
+			request,
+		);
+		const response = await this.checkPemeriksaanMustExist(id);
+
+		if (updateRequest.tanggal) {
+			response.tanggal = updateRequest.tanggal;
+		}
+
+		if (updateRequest.berat) {
+			response.berat = new Decimal(updateRequest.berat);
+		}
+
+		if (updateRequest.tinggi) {
+			response.tinggi = new Decimal(updateRequest.tinggi);
+		}
+
+		if (updateRequest.lingkarKepala) {
+			response.lingkarKepala = new Decimal(updateRequest.lingkarKepala);
+		}
+
+		if (updateRequest.keterangan) {
+			response.keterangan = updateRequest.keterangan;
+		}
+
+		const result = await prismaClient.pemeriksaanBalita.update({
+			where: {
+				id: response.id,
+			},
+			data: response,
+		});
+
+		return toPemeriksaanBalitaResponse(result);
+	}
+
+	static async remove(id: number): Promise<string> {
+		await this.checkPemeriksaanMustExist(id);
+		await prismaClient.pemeriksaanBalita.delete({
+			where: {
+				id: id,
+			},
+		});
+
+		return "Pemeriksaan berhasil dihapus";
 	}
 }

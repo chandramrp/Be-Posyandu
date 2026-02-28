@@ -42,3 +42,11 @@ apiRouter.get(
 	"/api/balita/:balitaId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",
 	PemeriksaanBalitaController.get,
 );
+apiRouter.patch(
+	"/api/balita/:balitaId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",
+	PemeriksaanBalitaController.update,
+);
+apiRouter.delete(
+	"/api/balita/:balitaId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",
+	PemeriksaanBalitaController.remove,
+);

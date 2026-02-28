@@ -16,7 +16,15 @@ export type CreatePemeriksaanBalitaRequest = {
 	berat: number;
 	tinggi: number;
 	lingkarKepala: number;
-	keterangan: string;
+	keterangan?: string;
+};
+
+export type UpdatePemeriksaanBalitaRequest = {
+	tanggal?: Date;
+	berat?: number;
+	tinggi?: number;
+	lingkarKepala?: number;
+	keterangan?: string;
 };
 
 export function toPemeriksaanBalitaResponse(
