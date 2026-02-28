@@ -175,5 +175,6 @@ describe("DELETE /api/balita/:id", () => {
 		logger.debug(response.body);
 		expect(response.status).toBe(401);
 		expect(response.body.errors).toBeDefined();
+		await BalitaTest.deleteAll();
 	});
 });

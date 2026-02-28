@@ -1,4 +1,10 @@
-import { Balita, IbuHamil, PemeriksaanBalita, User } from "@prisma/client";
+import {
+	Balita,
+	IbuHamil,
+	PemeriksaanBalita,
+	PemeriksaanIbuHamil,
+	User,
+} from "@prisma/client";
 import bcrypt from "bcrypt";
 import { prismaClient } from "../src/app/database";
 import { ResponseError } from "../src/error/response-error";
@@ -160,6 +166,62 @@ export class PemeriksaanBalitaTest {
 
 		if (!response) {
 			throw new ResponseError(404, "Pemeriksaan balita not found");
+		}
+
+		return response;
+	}
+}
+
+export class PemeriksaanIbuHamilTest {
+	static async delete() {
+		await prismaClient.pemeriksaanIbuHamil.deleteMany({
+			where: {
+				keterangan: "test",
+			},
+		});
+	}
+
+	static async create() {
+		const ibuHamil = await IbuHamilTest.get();
+		await prismaClient.pemeriksaanIbuHamil.create({
+			data: {
+				ibuHamilId: ibuHamil.id,
+				tanggal: new Date("2025-10-10"),
+				usiaKehamilan: 40,
+				berat: 60,
+				tinggi: 170,
+				tensi: "120/90",
+				keterangan: "test",
+			},
+		});
+	}
+
+	static async createMany(amount: number) {
+		const ibuHamil = await IbuHamilTest.get();
+		for (let i = 0; i < amount; i++) {
+			await prismaClient.pemeriksaanIbuHamil.create({
+				data: {
+					ibuHamilId: ibuHamil.id,
+					tanggal: new Date("2025-10-10"),
+					usiaKehamilan: 40,
+					berat: 60,
+					tinggi: 170,
+					tensi: "120/90",
+					keterangan: "test",
+				},
+			});
+		}
+	}
+
+	static async get(): Promise<PemeriksaanIbuHamil> {
+		const response = await prismaClient.pemeriksaanIbuHamil.findFirst({
+			where: {
+				keterangan: "test",
+			},
+		});
+
+		if (!response) {
+			throw new ResponseError(404, "Pemeriksaan not found");
 		}
 
 		return response;

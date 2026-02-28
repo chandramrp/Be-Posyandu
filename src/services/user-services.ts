@@ -1,4 +1,6 @@
-import { Balita, User } from "@prisma/client";
+import { User } from "@prisma/client";
+import bcrypt from "bcrypt";
+import { v4 as uuid } from "uuid";
 import { prismaClient } from "../app/database";
 import { ResponseError } from "../error/response-error";
 import {
@@ -10,9 +12,6 @@ import {
 } from "../models/user-model";
 import { UserValidation } from "../validation/user-validation";
 import { Validation } from "../validation/validation";
-import bcrypt from "bcrypt";
-import { v4 as uuid } from "uuid";
-import { BalitaResponse } from "../models/balita-model";
 
 export class UserService {
 	static async register(request: CreateUserRequest): Promise<UserResponse> {

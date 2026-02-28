@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
+import { logger } from "../app/logging";
 import {
 	CreateBalitaRequest,
 	UpdateBalitaRequest,
 } from "../models/balita-model";
-import { BalitaService } from "../services/balita-service";
-import { logger } from "../app/logging";
+import { BalitaService } from "../services/balita-services";
 import { BalitaRequest } from "../type/balita-request";
 
 export class BalitaController {

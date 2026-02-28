@@ -2,6 +2,7 @@ import express from "express";
 import { BalitaController } from "../controller/balita-controller";
 import { IbuHamilController } from "../controller/ibu-hamil-contoller";
 import { PemeriksaanBalitaController } from "../controller/pemeriksaan-balita-contoller";
+import { PemeriksaanIbuHamilController } from "../controller/pemeriksaan-ibu-hamil-controller";
 import { UserController } from "../controller/user-controller";
 import { authMiddleware } from "../middleware/auth-middleware";
 export const apiRouter = express.Router();
@@ -49,4 +50,26 @@ apiRouter.patch(
 apiRouter.delete(
 	"/api/balita/:balitaId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",
 	PemeriksaanBalitaController.remove,
+);
+
+// Pemeriksaan Ibu Hamil API
+apiRouter.post(
+	"/api/ibuhamil/:ibuHamilId(\\d+)/pemeriksaan",
+	PemeriksaanIbuHamilController.create,
+);
+apiRouter.get(
+	"/api/ibuhamil/:ibuHamilId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",
+	PemeriksaanIbuHamilController.get,
+);
+apiRouter.get(
+	"/api/ibuhamil/:ibuHamilId(\\d+)/pemeriksaan",
+	PemeriksaanIbuHamilController.getAll,
+);
+apiRouter.patch(
+	"/api/ibuhamil/:ibuHamilId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",
+	PemeriksaanIbuHamilController.update,
+);
+apiRouter.delete(
+	"/api/ibuhamil/:ibuHamilId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",
+	PemeriksaanIbuHamilController.remove,
 );

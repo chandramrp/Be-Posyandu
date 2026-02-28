@@ -21,14 +21,7 @@ export class PemeriksaanBalitaService {
 		);
 
 		const result = await prismaClient.pemeriksaanBalita.create({
-			data: {
-				balitaId: pemeriksaanBalitaRequest.balitaId,
-				tanggal: pemeriksaanBalitaRequest.tanggal,
-				berat: pemeriksaanBalitaRequest.berat,
-				tinggi: pemeriksaanBalitaRequest.tinggi,
-				lingkarKepala: pemeriksaanBalitaRequest.lingkarKepala,
-				keterangan: pemeriksaanBalitaRequest.keterangan,
-			},
+			data: pemeriksaanBalitaRequest,
 		});
 
 		return toPemeriksaanBalitaResponse(result);

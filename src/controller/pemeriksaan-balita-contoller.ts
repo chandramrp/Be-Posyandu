@@ -3,7 +3,7 @@ import {
 	CreatePemeriksaanBalitaRequest,
 	UpdatePemeriksaanBalitaRequest,
 } from "../models/pemeriksaan-balita-model";
-import { BalitaService } from "../services/balita-service";
+import { BalitaService } from "../services/balita-services";
 import { PemeriksaanBalitaService } from "../services/pemeriksaan-balita-service";
 
 export class PemeriksaanBalitaController {
