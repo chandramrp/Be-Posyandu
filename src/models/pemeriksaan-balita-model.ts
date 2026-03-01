@@ -27,6 +27,12 @@ export type UpdatePemeriksaanBalitaRequest = {
 	keterangan?: string;
 };
 
+export type PemeriksaanBalitaQuery = {
+	search?: string;
+	page: number;
+	limit: number;
+};
+
 export function toPemeriksaanBalitaResponse(
 	pemeriksaan: PemeriksaanBalita,
 ): PemeriksaanBalitaResponse {

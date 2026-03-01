@@ -1,15 +1,17 @@
 import { PemeriksaanBalita } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
-import { prismaClient } from "../app/database";
 import { ResponseError } from "../error/response-error";
+import { Paginated } from "../models/page";
 import {
 	CreatePemeriksaanBalitaRequest,
+	PemeriksaanBalitaQuery,
 	PemeriksaanBalitaResponse,
 	toPemeriksaanBalitaResponse,
 	UpdatePemeriksaanBalitaRequest,
 } from "../models/pemeriksaan-balita-model";
 import { PemeriksaanBalitaValidation } from "../validation/pemeriksaan-balita-validation";
 import { Validation } from "../validation/validation";
+import { prismaClient } from "./../app/database";
 
 export class PemeriksaanBalitaService {
 	static async create(
@@ -25,6 +27,21 @@ export class PemeriksaanBalitaService {
 		});
 
 		return toPemeriksaanBalitaResponse(result);
+	}
+
+	static async getAllByid(
+		balitaId: number,
+	): Promise<PemeriksaanBalitaResponse[]> {
+		const response = await prismaClient.pemeriksaanBalita.findMany({
+			where: {
+				balitaId: balitaId,
+			},
+		});
+
+		if (response.length === 0) {
+			throw new ResponseError(404, "Pemeriksaan not found");
+		}
+		return response.map((data) => toPemeriksaanBalitaResponse(data));
 	}
 
 	static async checkPemeriksaanMustExist(
@@ -44,18 +61,53 @@ export class PemeriksaanBalitaService {
 	}
 
 	static async getAll(
-		balitaId: number,
-	): Promise<PemeriksaanBalitaResponse[]> {
-		const response = await prismaClient.pemeriksaanBalita.findMany({
-			where: {
-				balitaId: balitaId,
-			},
-		});
+		query: PemeriksaanBalitaQuery,
+	): Promise<Paginated<PemeriksaanBalitaResponse[]>> {
+		const validQuery = Validation.validate(
+			PemeriksaanBalitaValidation.QUERY,
+			query,
+		);
+		const { search, page, limit } = validQuery;
+		const skip = (page - 1) * limit;
 
-		if (response.length === 0) {
-			throw new ResponseError(404, "Pemeriksaan not found");
-		}
-		return response.map((data) => toPemeriksaanBalitaResponse(data));
+		const where = {
+			AND: [
+				search
+					? {
+							OR: [
+								{
+									balita: { nama: search },
+								},
+							],
+						}
+					: {},
+			],
+		};
+
+		const [data, total] = await Promise.all([
+			prismaClient.pemeriksaanBalita.findMany({
+				where,
+				skip,
+				take: limit,
+				orderBy: {
+					createdAt: "desc",
+				},
+			}),
+
+			prismaClient.pemeriksaanBalita.count({ where }),
+		]);
+
+		return {
+			data: data.map((pemeriksaan) =>
+				toPemeriksaanBalitaResponse(pemeriksaan),
+			),
+			meta: {
+				page,
+				limit,
+				total,
+				totalPages: Math.ceil(total / limit),
+			},
+		};
 	}
 
 	static async get(id: number): Promise<PemeriksaanBalitaResponse> {

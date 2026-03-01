@@ -78,6 +78,68 @@ describe("POST /api/balita/:id/pemeriksaan", () => {
 	});
 });
 
+describe("GET /api/balita/pemeriksaan", () => {
+	beforeEach(async () => {
+		await UserTest.create();
+		await BalitaTest.create();
+		for (let i = 0; i < 5; i++) {
+			await PemeriksaanBalitaTest.create();
+		}
+	});
+
+	afterEach(async () => {
+		await PemeriksaanBalitaTest.delete();
+		await BalitaTest.deleteAll();
+		await UserTest.delete();
+	});
+
+	it("should be able to get data balita", async () => {
+		const response = await supertest(app)
+			.get("/api/balita/pemeriksaan")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(5);
+		expect(response.body.meta.page).toBe(1);
+		expect(response.body.meta.limit).toBe(10);
+		expect(response.body.meta.total).toBe(5);
+		expect(response.body.meta.totalPages).toBe(1);
+	});
+
+	it("should be able to search by nama", async () => {
+		const response = await supertest(app)
+			.get("/api/balita/pemeriksaan?search=test")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(5);
+		expect(response.body.meta).toBeDefined();
+	});
+
+	it("should be able to search with pagination", async () => {
+		const response = await supertest(app)
+			.get("/api/balita/pemeriksaan?page=1&limit=2")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(2);
+		expect(response.body.meta.totalPages).toBe(3);
+	});
+
+	it("should be reject to get data balita", async () => {
+		const response = await supertest(app)
+			.get("/api/balita/pemeriksaan")
+			.set("X-API-TOKEN", "hi");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(401);
+		expect(response.body.errors).toBeDefined();
+	});
+});
+
 describe("GET /api/balita/:id/pemeriksaan", () => {
 	beforeEach(async () => {
 		await UserTest.create();

@@ -35,9 +35,10 @@ apiRouter.post(
 	"/api/balita/:id(\\d+)/pemeriksaan",
 	PemeriksaanBalitaController.create,
 );
+apiRouter.get("/api/balita/pemeriksaan", PemeriksaanBalitaController.getAll);
 apiRouter.get(
 	"/api/balita/:id(\\d+)/pemeriksaan",
-	PemeriksaanBalitaController.getAll,
+	PemeriksaanBalitaController.getAllById,
 );
 apiRouter.get(
 	"/api/balita/:balitaId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",

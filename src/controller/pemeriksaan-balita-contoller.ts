@@ -27,9 +27,24 @@ export class PemeriksaanBalitaController {
 
 	static async getAll(req: Request, res: Response, next: NextFunction) {
 		try {
+			const request = {
+				search: req.query.search as string | undefined,
+				page: Number(req.query.page as string) || 1,
+				limit: Number(req.query.limit as string) || 10,
+			};
+
+			const response = await PemeriksaanBalitaService.getAll(request);
+			res.status(200).json(response);
+		} catch (e) {
+			next(e);
+		}
+	}
+
+	static async getAllById(req: Request, res: Response, next: NextFunction) {
+		try {
 			const id = Number(req.params.id);
 			await BalitaService.checkBalitaMustExsist(id);
-			const response = await PemeriksaanBalitaService.getAll(id);
+			const response = await PemeriksaanBalitaService.getAllByid(id);
 
 			res.status(200).json({
 				data: response,
