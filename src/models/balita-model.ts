@@ -16,6 +16,7 @@ export type CreateBalitaRequest = {
 	jenisKelamin: JenisKelamin;
 	namaOrtu: string;
 	alamat: string;
+	posyandu: string;
 };
 
 export type UpdateBalitaRequest = {
@@ -24,6 +25,7 @@ export type UpdateBalitaRequest = {
 	jenisKelamin?: JenisKelamin | null;
 	namaOrtu?: string | null;
 	alamat?: string | null;
+	posyandu?: string | null;
 };
 
 export type BalitaQuery = {

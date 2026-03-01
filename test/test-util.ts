@@ -76,6 +76,7 @@ export class BalitaTest {
 				jenisKelamin: "Perempuan",
 				namaOrtu: "test",
 				alamat: "test",
+				posyandu: "test",
 			},
 		});
 	}

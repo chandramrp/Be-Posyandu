@@ -22,6 +22,7 @@ describe("POST /api/balita", () => {
 				jenisKelamin: "Laki_laki",
 				namaOrtu: "test",
 				alamat: "test",
+				posyandu: "test",
 			});
 
 		logger.debug(response.body);

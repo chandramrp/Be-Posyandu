@@ -7,6 +7,7 @@ export class BalitaValidation {
 		jenisKelamin: z.string(),
 		namaOrtu: z.string().min(1).max(100),
 		alamat: z.string().min(1).max(100),
+		posyandu: z.string().min(1).max(100),
 	});
 
 	static readonly UPDATE: ZodType = z.object({
@@ -15,6 +16,7 @@ export class BalitaValidation {
 		jenisKelamin: z.string().optional(),
 		namaOrtu: z.string().min(1).max(100).optional(),
 		alamat: z.string().min(1).max(100).optional(),
+		posyandu: z.string().min(1).max(100).optional(),
 	});
 
 	static readonly QUERY: ZodType = z.object({
