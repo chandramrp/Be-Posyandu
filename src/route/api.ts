@@ -59,12 +59,16 @@ apiRouter.post(
 	PemeriksaanIbuHamilController.create,
 );
 apiRouter.get(
+	"/api/ibuhamil/pemeriksaan",
+	PemeriksaanIbuHamilController.getAll,
+);
+apiRouter.get(
 	"/api/ibuhamil/:ibuHamilId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",
 	PemeriksaanIbuHamilController.get,
 );
 apiRouter.get(
 	"/api/ibuhamil/:ibuHamilId(\\d+)/pemeriksaan",
-	PemeriksaanIbuHamilController.getAll,
+	PemeriksaanIbuHamilController.getAllById,
 );
 apiRouter.patch(
 	"/api/ibuhamil/:ibuHamilId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",

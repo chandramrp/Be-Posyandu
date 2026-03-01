@@ -1,13 +1,16 @@
-import { PemeriksaanIbuHamil } from "@prisma/client";
+import { PemeriksaanIbuHamil, Prisma } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import { prismaClient } from "../app/database";
 import { ResponseError } from "../error/response-error";
+import { Paginated } from "../models/page";
 import {
 	CreatePemeriksaanIbuHamil,
+	PemeriksaanIbuHamilQuery,
 	PemeriksaanIbuHamilResponse,
 	toPemeriksaanIbuHamilResponse,
 	UpdatePemeriksaanIbuHamil,
 } from "../models/pemeriksaan-ibu-hamil-model";
+import { PemeriksaanBalitaValidation } from "../validation/pemeriksaan-balita-validation";
 import { PemeriksaanIbuHamilValidation } from "../validation/pemeriksaan-ibu-hamil-validation";
 import { Validation } from "../validation/validation";
 
@@ -46,7 +49,53 @@ export class PemeriksaanIbuHamilService {
 		return toPemeriksaanIbuHamilResponse(response);
 	}
 
-	static async getAll(id: number): Promise<PemeriksaanIbuHamilResponse[]> {
+	static async getAll(
+		request: PemeriksaanIbuHamilQuery,
+	): Promise<Paginated<PemeriksaanIbuHamilResponse[]>> {
+		const validQuery = Validation.validate(
+			PemeriksaanBalitaValidation.QUERY,
+			request,
+		);
+		const { search, page, limit } = validQuery;
+		const skip = (page - 1) * limit;
+
+		const filters: Prisma.PemeriksaanIbuHamilWhereInput[] = [];
+		if (search) {
+			filters.push({
+				OR: [{ ibuHamil: { nama: search } }],
+			});
+		}
+		const where = {
+			AND: filters,
+		};
+
+		const [data, total] = await Promise.all([
+			prismaClient.pemeriksaanIbuHamil.findMany({
+				where,
+				skip,
+				take: limit,
+				orderBy: {
+					createdAt: "desc",
+				},
+			}),
+			prismaClient.pemeriksaanIbuHamil.count({ where }),
+		]);
+
+		return {
+			data: data.map((pemeriksaan) =>
+				toPemeriksaanIbuHamilResponse(pemeriksaan),
+			),
+			meta: {
+				page,
+				limit,
+				total,
+				totalPages: Math.ceil(total / limit),
+			},
+		};
+	}
+	static async getAllById(
+		id: number,
+	): Promise<PemeriksaanIbuHamilResponse[]> {
 		const response = await prismaClient.pemeriksaanIbuHamil.findMany({
 			where: {
 				ibuHamilId: id,

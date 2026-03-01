@@ -29,8 +29,8 @@ export class PemeriksaanBalitaController {
 		try {
 			const request = {
 				search: req.query.search as string | undefined,
-				page: Number(req.query.page as string) || 1,
-				limit: Number(req.query.limit as string) || 10,
+				page: Number(req.query.page) || 1,
+				limit: Number(req.query.limit) || 10,
 			};
 
 			const response = await PemeriksaanBalitaService.getAll(request);

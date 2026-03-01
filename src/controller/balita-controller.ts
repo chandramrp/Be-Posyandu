@@ -31,8 +31,8 @@ export class BalitaController {
 				jenisKelamin: req.query.jenisKelamin as
 					| JenisKelamin
 					| undefined,
-				page: Number(req.query.page as string) || 1,
-				limit: Number(req.query.limit as string) || 10,
+				page: Number(req.query.page) || 1,
+				limit: Number(req.query.limit) || 10,
 			};
 
 			const response = await BalitaService.getAll(request);

@@ -38,10 +38,24 @@ export class PemeriksaanIbuHamilController {
 
 	static async getAll(req: Request, res: Response, next: NextFunction) {
 		try {
+			const request = {
+				search: req.query.search as string | undefined,
+				page: Number(req.query.page) || 1,
+				limit: Number(req.query.limit) || 10,
+			};
+			const response = await PemeriksaanIbuHamilService.getAll(request);
+			res.status(200).json(response);
+		} catch (e) {
+			next(e);
+		}
+	}
+
+	static async getAllById(req: Request, res: Response, next: NextFunction) {
+		try {
 			const ibuHamilId = Number(req.params.ibuHamilId);
 			await IbuHamilServices.checkIbuHamilMustExist(ibuHamilId);
 			const response =
-				await PemeriksaanIbuHamilService.getAll(ibuHamilId);
+				await PemeriksaanIbuHamilService.getAllById(ibuHamilId);
 			res.status(200).json({
 				data: response,
 			});

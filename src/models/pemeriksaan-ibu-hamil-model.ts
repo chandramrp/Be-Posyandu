@@ -30,6 +30,12 @@ export type UpdatePemeriksaanIbuHamil = {
 	keterangan?: string;
 };
 
+export type PemeriksaanIbuHamilQuery = {
+	search?: string;
+	page: number;
+	limit: number;
+};
+
 export function toPemeriksaanIbuHamilResponse(
 	pemeriksaan: PemeriksaanIbuHamil,
 ): PemeriksaanIbuHamilResponse {
