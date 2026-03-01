@@ -1,6 +1,8 @@
 import express from "express";
 import { BalitaController } from "../controller/balita-controller";
+import { DashboardController } from "../controller/dashboard";
 import { IbuHamilController } from "../controller/ibu-hamil-contoller";
+import { LaporanController } from "../controller/laporan-controller";
 import { PemeriksaanBalitaController } from "../controller/pemeriksaan-balita-contoller";
 import { PemeriksaanIbuHamilController } from "../controller/pemeriksaan-ibu-hamil-controller";
 import { UserController } from "../controller/user-controller";
@@ -77,4 +79,18 @@ apiRouter.patch(
 apiRouter.delete(
 	"/api/ibuhamil/:ibuHamilId(\\d+)/pemeriksaan/:pemeriksaanId(\\d+)",
 	PemeriksaanIbuHamilController.remove,
+);
+
+// Dashboard API
+apiRouter.get("/api/dashboard/stats", DashboardController.stats);
+apiRouter.get("/api/dashboard/chart", DashboardController.chart);
+apiRouter.get("/api/dashboard/recent-exams", DashboardController.recentExams);
+
+// Laporan API
+apiRouter.get("/api/laporan/balita", LaporanController.balita);
+apiRouter.get("/api/laporan/balita/export", LaporanController.exportBalita);
+apiRouter.get("/api/laporan/ibu-hamil", LaporanController.ibuHamil);
+apiRouter.get(
+	"/api/laporan/ibu-hamil/export",
+	LaporanController.exportIbuHamil,
 );
