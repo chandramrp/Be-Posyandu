@@ -1,11 +1,13 @@
-import { User } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
 import { prismaClient } from "../app/database";
 import { ResponseError } from "../error/response-error";
+import { Paginated } from "../models/page";
 import {
 	CreateUserRequest,
 	LoginUserRequest,
+	SearchUserRequest,
 	toUserResponse,
 	UpdateUserRequest,
 	UserResponse,
@@ -84,10 +86,47 @@ export class UserService {
 		return response;
 	}
 
-	static async getAll(): Promise<UserResponse[]> {
-		const listUser = await prismaClient.user.findMany();
+	static async getAll(
+		request: SearchUserRequest,
+	): Promise<Paginated<UserResponse[]>> {
+		const validRequest = Validation.validate(UserValidation.QUERY, request);
+		const { search, page, limit } = validRequest;
+		const skip = (page - 1) * limit;
 
-		return listUser.map((user) => toUserResponse(user));
+		const filters: Prisma.UserWhereInput[] = [];
+		if (search) {
+			filters.push({
+				OR: [
+					{ nama: { contains: search } },
+					{ email: { contains: search } },
+				],
+			});
+		}
+		const where = {
+			AND: filters,
+		};
+
+		const [data, total] = await Promise.all([
+			prismaClient.user.findMany({
+				where,
+				skip,
+				take: limit,
+				orderBy: {
+					createdAt: "desc",
+				},
+			}),
+			prismaClient.user.count({ where }),
+		]);
+
+		return {
+			data: data.map((user) => toUserResponse(user)),
+			meta: {
+				page,
+				limit,
+				total,
+				totalPages: Math.ceil(total / limit),
+			},
+		};
 	}
 
 	static async get(user: User): Promise<UserResponse> {

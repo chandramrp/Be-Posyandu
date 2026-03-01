@@ -83,14 +83,50 @@ describe("GET /api/users", () => {
 	});
 
 	it("should be able to get data users", async () => {
-		const user = await UserTest.get();
 		const response = await supertest(app)
 			.get("/api/users")
-			.set("X-API-TOKEN", user.token!);
+			.set("X-API-TOKEN", "test");
 
 		logger.debug(response.body);
 		expect(response.status).toBe(200);
 		expect(response.body.data.length).toBe(5);
+		expect(response.body.meta.page).toBe(1);
+		expect(response.body.meta.limit).toBe(5);
+		expect(response.body.meta.total).toBe(5);
+		expect(response.body.meta.totalPages).toBe(1);
+	});
+
+	it("should be able to search by nama", async () => {
+		const response = await supertest(app)
+			.get("/api/users?search=test")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(5);
+		expect(response.body.meta).toBeDefined();
+	});
+
+	it("should be able to filter by jenis email", async () => {
+		const user = await UserTest.get();
+		const response = await supertest(app)
+			.get(`/api/users?email=${user.email}`)
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.meta).toBeDefined();
+	});
+
+	it("should be able to search with pagination", async () => {
+		const response = await supertest(app)
+			.get("/api/users?page=1&limit=2")
+			.set("X-API-TOKEN", "test");
+
+		logger.debug(response.body);
+		expect(response.status).toBe(200);
+		expect(response.body.data.length).toBe(2);
+		expect(response.body.meta.totalPages).toBe(3);
 	});
 
 	it("should be reject to get data users", async () => {

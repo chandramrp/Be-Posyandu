@@ -20,4 +20,10 @@ export class UserValidation {
 		role: z.string().optional(),
 		status: z.string().optional(),
 	});
+
+	static readonly QUERY: ZodType = z.object({
+		search: z.string().optional(),
+		page: z.coerce.number().min(1).default(1),
+		limit: z.coerce.number().min(1).max(100).default(5),
+	});
 }

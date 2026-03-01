@@ -33,6 +33,12 @@ export type UpdateUserRequest = {
 	status?: Status;
 };
 
+export type SearchUserRequest = {
+	search?: string;
+	page: number;
+	limit: number;
+};
+
 export function toUserResponse(user: User): UserResponse {
 	return {
 		id: user.id,

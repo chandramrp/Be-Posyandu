@@ -34,10 +34,13 @@ export class UserController {
 
 	static async getAll(req: UserRequest, res: Response, next: NextFunction) {
 		try {
-			const response = await UserService.getAll();
-			res.status(200).json({
-				data: response,
-			});
+			const request = {
+				search: req.query.search as string | undefined,
+				page: Number(req.query.page) || 1,
+				limit: Number(req.query.limit) || 5,
+			};
+			const response = await UserService.getAll(request);
+			res.status(200).json(response);
 		} catch (e) {
 			next(e);
 		}
