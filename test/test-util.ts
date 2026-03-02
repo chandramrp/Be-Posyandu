@@ -6,7 +6,7 @@ import {
 	User,
 } from "@prisma/client";
 import bcrypt from "bcrypt";
-import { prismaClient } from "../src/app/database";
+import { prismaClient } from "../src/application/database";
 import { ResponseError } from "../src/error/response-error";
 
 export class UserTest {

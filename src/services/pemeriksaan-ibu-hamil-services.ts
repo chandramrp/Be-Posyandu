@@ -1,6 +1,6 @@
 import { PemeriksaanIbuHamil, Prisma } from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
-import { prismaClient } from "../app/database";
+import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import { Paginated } from "../models/page";
 import {

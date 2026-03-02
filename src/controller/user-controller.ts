@@ -6,6 +6,7 @@ import {
 } from "../models/user-model";
 import { UserService } from "../services/user-services";
 import { UserRequest } from "../type/user-request";
+import { logger } from "../application/logging";
 
 export class UserController {
 	static async register(req: Request, res: Response, next: NextFunction) {
@@ -24,6 +25,7 @@ export class UserController {
 		try {
 			const request: LoginUserRequest = req.body as LoginUserRequest;
 			const response = await UserService.login(request);
+			logger.debug("Request : " + request);
 			res.status(200).json({
 				data: response,
 			});

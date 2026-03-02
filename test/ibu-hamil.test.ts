@@ -1,5 +1,5 @@
 import supertest from "supertest";
-import { logger } from "../src/app/logging";
+import { logger } from "../src/application/logging";
 import { app } from "./../src/application/app";
 import { IbuHamilTest, UserTest } from "./test-util";
 describe("POST /api/ibuhamil", () => {

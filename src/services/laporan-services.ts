@@ -1,4 +1,4 @@
-import { prismaClient } from "../app/database";
+import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 
 export type LaporanQuery = {

@@ -1,6 +1,6 @@
 import { IbuHamil } from "@prisma/client";
-import { prismaClient } from "../app/database";
-import { logger } from "../app/logging";
+import { prismaClient } from "../application/database";
+import { logger } from "../application/logging";
 import { ResponseError } from "../error/response-error";
 import {
 	CreateIbuHamilRequest,

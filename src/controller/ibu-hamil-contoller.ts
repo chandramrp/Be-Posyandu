@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { logger } from "../app/logging";
+import { logger } from "../application/logging";
 import {
 	CreateIbuHamilRequest,
 	UpdateIbuHamilRequest,

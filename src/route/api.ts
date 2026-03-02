@@ -89,7 +89,7 @@ apiRouter.get("/api/dashboard/recent-exams", DashboardController.recentExams);
 // Laporan API
 apiRouter.get("/api/laporan/balita", LaporanController.balita);
 apiRouter.get("/api/laporan/balita/export", LaporanController.exportBalita);
-apiRouter.get("/api/laporan/ibu-hamil", LaporanController.ibuHamil);
+apiRouter.get("/api/laporan/ibuhamil", LaporanController.ibuHamil);
 apiRouter.get(
 	"/api/laporan/ibu-hamil/export",
 	LaporanController.exportIbuHamil,

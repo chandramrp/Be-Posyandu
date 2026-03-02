@@ -1,7 +1,7 @@
 import { Prisma, User } from "@prisma/client";
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
-import { prismaClient } from "../app/database";
+import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import { Paginated } from "../models/page";
 import {

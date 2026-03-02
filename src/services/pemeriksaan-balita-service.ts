@@ -11,7 +11,7 @@ import {
 } from "../models/pemeriksaan-balita-model";
 import { PemeriksaanBalitaValidation } from "../validation/pemeriksaan-balita-validation";
 import { Validation } from "../validation/validation";
-import { prismaClient } from "./../app/database";
+import { prismaClient } from "../application/database";
 
 export class PemeriksaanBalitaService {
 	static async create(

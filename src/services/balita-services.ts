@@ -1,5 +1,5 @@
 import { Balita } from "@prisma/client";
-import { prismaClient } from "../app/database";
+import { prismaClient } from "../application/database";
 import { ResponseError } from "../error/response-error";
 import {
 	BalitaQuery,

@@ -1,4 +1,4 @@
-import { prismaClient } from "../app/database";
+import { prismaClient } from "../application/database";
 
 export type DashboardStatsResponse = {
 	totalBalita: number;
